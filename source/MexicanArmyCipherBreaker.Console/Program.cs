@@ -31,7 +31,10 @@ namespace MexicanArmyCipherBreaker.Console
             var codeWheelSystem = LoadMexicanArmyCodeWheel(new CryptoWheelSystem<string>(26));
 
             System.Console.Write("Decyphering.");
-            for(int wheel1Index = 0; wheel1Index < 26; wheel1Index++)
+
+            //OneTimeSolve(codeWheelSystem, textToDecode);
+
+            for (int wheel1Index = 0; wheel1Index < 26; wheel1Index++)
             {
                 for (int wheel2Index = 0; wheel2Index < 26; wheel2Index++)
                 {
@@ -39,10 +42,14 @@ namespace MexicanArmyCipherBreaker.Console
                     {
                         for (int wheel4Index = 0; wheel4Index < 26; wheel4Index++)
                         {
-                            //codeWheelSystem.SetWheelPositions("c", "10", "50", "67", "84");
                             var decodedText = codeWheelSystem.EncodeText(textToDecode);
                             if (decodedText.HasFrequentEnglishWord())
                             {
+                                System.Console.WriteLine();
+                                System.Console.WriteLine("******************************************************************************");
+                                System.Console.WriteLine($"* BOOM!  Decyphered a candidate at {codeWheelSystem.WriteConfigToString()}");
+                                System.Console.WriteLine("******************************************************************************");
+                                System.Console.WriteLine();
                                 fileHelper.WritePlainTextToFile(decodedText, codeWheelSystem.WriteConfigToString());
                             }
                             codeWheelSystem.ClearCache();
@@ -55,10 +62,20 @@ namespace MexicanArmyCipherBreaker.Console
                 }
                 codeWheelSystem.ShiftWheelTopPositionRight(1);
             }
-            
+
             sw.Stop();
             System.Console.WriteLine($"Completed in {sw.Elapsed.TotalSeconds} seconds.");
             System.Console.ReadKey();
+        }
+
+        private static void OneTimeSolve(CryptoWheelSystem<string> codeWheelSystem, string[] textToDecode)
+        {
+            codeWheelSystem.SetWheelPositions("a", "12", "45", "58", "85");
+            var decodedText = codeWheelSystem.EncodeText(textToDecode);
+            //if (decodedText.HasFrequentEnglishWord())
+            //{
+            //  System.Console.WriteLine($"Boom!  Cracked a candidate at {codeWheelSystem.WriteConfigToString()}");
+            System.Console.WriteLine(decodedText);
         }
 
         private static CryptoWheelSystem<string> LoadMexicanArmyCodeWheel(CryptoWheelSystem<string> cryptoWheelSystem)
