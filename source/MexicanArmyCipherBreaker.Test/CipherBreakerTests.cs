@@ -1,38 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using MexicanArmyCipherBreaker.Library;
+using NUnit.Framework;
 
-namespace MexicanArmyCipherBreaker.Console
+namespace MexicanArmyCipherBreaker.Test
 {
-    class Program
+    [TestFixture]
+    public class CipherBreakerTests
     {
-        static void Main(string[] args)
+        LetterDistributionCollection _letterDistributionEnglish = new LetterDistributionCollection();
+        readonly CryptoWheelSystem<string> _cryptoWheelSystem = new CryptoWheelSystem<string>(26);
+
+        [SetUp]
+        public void TestSetup()
         {
-            var letterDistributionEnglish = new LetterDistributionCollection();
-            letterDistributionEnglish.Load();
+            _letterDistributionEnglish.Load();
 
-            var codeWheelSystem = LoadMexicanArmyCodeWheel(new CryptoWheelSystem<string>(26));
-
-            codeWheelSystem.SetWheelPositions("c", "03", "33", "67", "84");
-            
-            FileHelper fh = new FileHelper();
-            var cipherTextFromFile = fh.GetCipherTextFromFile(@"c:\home\temp\cipherText.txt");
-            var textToDecode = cipherTextFromFile.Split(' ');
-
-            var decodedText = codeWheelSystem.DecodeText(textToDecode);
-           // var decodedPlaintextLetter = codeWheelSystem.Decode(codeToLookUp);
-            System.Console.WriteLine($"{decodedText}");
-            System.Console.ReadKey();
-        }
-
-        private static CryptoWheelSystem<string> LoadMexicanArmyCodeWheel(CryptoWheelSystem<string> cryptoWheelSystem)
-        {
-            var outerLetterWheel = new CryptoWheel<string>(26) { Name = "Outside Letter Wheel"};
-            var outerLetterWheelmarkValues = new string[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+            var cryptoWheelSystem = new CryptoWheelSystem<string>(26);
+            var outerLetterWheel = new CryptoWheel<string>(26) { Name = "Outside Letter Wheel" };
+            var outerLetterWheelmarkValues = new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
             int j = 0;
             foreach (var mark in outerLetterWheelmarkValues)
             {
@@ -82,14 +68,44 @@ namespace MexicanArmyCipherBreaker.Console
             }
             cryptoWheelSystem.AddWheel(numberWheel4);
 
-            //var numberWheel4 = new CryptoWheel<string> { Name = "Number Wheel 4" };
-            //List<string> numberWheelMarkValues4 = new List<string>  { "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "00", "null1", "null2", "null3", "null4" };
-            //var wheelMarks4 = new List<Wheelmark<string>>(26);
-            //wheelMarks4.AddRange(numberWheelMarkValues4.Select(wheelMarkvalue => new Wheelmark<string>() { null, wheelMarkvalue }));
-            //numberWheel4.WheelMarks = wheelMarks4;
-            //cryptoWheelSystem.AddWheel(numberWheel4);
+        }
 
-            return cryptoWheelSystem;
+        [Test]
+        public void LoadEnglishLetterDistributionTest()
+        {
+            Assert.AreEqual(26, _letterDistributionEnglish.Count);
+
+            Assert.LessOrEqual((decimal)99.99, _letterDistributionEnglish.TotalPercentageSum);
+            Assert.GreaterOrEqual((decimal)100.01, _letterDistributionEnglish.TotalPercentageSum);
+
+            Assert.IsTrue(_letterDistributionEnglish.ContainsOneInstanceOfEachLetter);
+        }
+
+        [Test]
+        public void CreateThreeWheelTest()
+        {
+            var testCryptoWheelSystem = new CryptoWheelSystem<string>(26);
+
+            var wheel1 = new CryptoWheel<string>(26) { Name = "First Wheel" };
+            _cryptoWheelSystem.AddWheel(wheel1);
+            
+            var wheel2 = new CryptoWheel<string>(26) { Name = "Second Wheel" };
+            testCryptoWheelSystem.AddWheel(wheel2);
+            
+            var wheel3 = new CryptoWheel<string>(26) { Name = "Third Wheel" };
+            testCryptoWheelSystem.AddWheel(wheel3);
+
+            var wheel4 = new CryptoWheel<string>(26) { Name = "Fourth Wheel" };
+            testCryptoWheelSystem.AddWheel(wheel4);
+
+            Assert.AreEqual(4, testCryptoWheelSystem.Count);
+
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _letterDistributionEnglish = null;
         }
     }
 }
