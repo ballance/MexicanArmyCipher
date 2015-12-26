@@ -8,7 +8,6 @@ namespace MexicanArmyCipherBreaker.Library
 {
     public class CryptoWheel<T>
     {
-        public int ConfigurationsSet = 0;
         public CryptoWheel(int size)
         {
             _size = size;
@@ -21,10 +20,10 @@ namespace MexicanArmyCipherBreaker.Library
 
         public T[] WheelArrayPositions { get; set; } 
         
-        public virtual Wheelmark<T>[] WheelMarks { get; set; }
         private T[] wheelArrayPositionsPrevious { get; set; }
         public int CurrentTopIndex { get; set; }
 
+        // TODO: Clean up and simplify the logic in this method
         public void SetTopPosition(T setPosition)
         {
             wheelArrayPositionsPrevious = WheelArrayPositions;
@@ -41,9 +40,9 @@ namespace MexicanArmyCipherBreaker.Library
                 }
                 WheelArrayPositions[i] = wheelArrayPositionsPrevious[previousTopIndex+iWithOffset];
             }
-            ConfigurationsSet++;
         }
 
+        // TODO: Clean up and simplify the logic in this method
         public void ShiftWheelRight()
         {
             wheelArrayPositionsPrevious = WheelArrayPositions;
@@ -58,7 +57,6 @@ namespace MexicanArmyCipherBreaker.Library
                 }
                 WheelArrayPositions[i] = wheelArrayPositionsPrevious[iWithOffset];
             }
-            ConfigurationsSet++;
         }
 
         public void AddWheelMark(int i, T mark)

@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using MexicanArmyCipherBreaker.Library;
+﻿using MexicanArmyCipherBreaker.Library;
 using NUnit.Framework;
 
 namespace MexicanArmyCipherBreaker.Test
 {
+    /// <summary>
+    /// TODO: Needs more Unit Tests!
+    /// </summary>
     [TestFixture]
     public class CipherBreakerTests
     {

@@ -24,10 +24,7 @@ namespace MexicanArmyCipherBreaker.Library
             }
         }
 
-        public int Count
-        {
-            get { return _letterDistribution.Count; }
-        }
+        public int Count => _letterDistribution.Count;
 
         public void Add(char letter, decimal frequency)
         {

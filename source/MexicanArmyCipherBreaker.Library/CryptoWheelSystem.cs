@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MexicanArmyCipherBreaker.Library
 {
     public class CryptoWheelSystem<T>
     {
-        private Dictionary<string, T> _mappedCache = new Dictionary<string, T>(); 
+        private Dictionary<string, T> _mappedCache = new Dictionary<string, T>();
         public CryptoWheelSystem(int numPositions)
         {
             _wheels = new List<CryptoWheel<T>>();
@@ -17,7 +16,7 @@ namespace MexicanArmyCipherBreaker.Library
         }
 
         private readonly List<CryptoWheel<T>> _wheels;
-        private int _numPositions;
+        private readonly int _numPositions;
 
         public int Count => _wheels.Count;
 
@@ -38,7 +37,6 @@ namespace MexicanArmyCipherBreaker.Library
 
         public void SetWheelTopPositionById(int wheelId, T setPosition)
         {
-            // Find id
             var foundWheel = _wheels.Where(w => w.Id.Equals(wheelId));
 
             if (foundWheel == null || !foundWheel.Any())
@@ -47,18 +45,22 @@ namespace MexicanArmyCipherBreaker.Library
             foundWheel.First().SetTopPosition(setPosition);
         }
 
-
+        // TODO: Add ShiftLeft and ShiftArbitrary
         public void ShiftWheelTopPositionRight(int wheelId)
         {
             var foundWheel = _wheels.Single(w => w.Id.Equals(wheelId));
             foundWheel.ShiftWheelRight();
         }
 
-        public T Encode(string codeNumber)
+        /// <summary>
+        /// Decodes from a ciphertext character input to a plaintext character output
+        /// Simple key / value cache added to improve performance for large ciphertext inputs
+        /// </summary>
+        /// <param name="codeNumber"></param>
+        /// <returns></returns>
+        // TODO: Simplify this logic.  this is used fequently and could be faster
+        public T Decode(string codeNumber)
         {
-            //var sw = new Stopwatch();
-            //sw.Start();
-
             if (_mappedCache.ContainsKey(codeNumber))
             {
                 return _mappedCache[codeNumber];
@@ -68,9 +70,7 @@ namespace MexicanArmyCipherBreaker.Library
             {
                 var codeNumberPosition = Array.IndexOf(wheel.WheelArrayPositions, codeNumber);
                 if (codeNumberPosition <= -1) continue;
-                //sw.Stop();
-                //Console.WriteLine($"Encode({codeNumber}) took {sw.ElapsedMilliseconds} ms.");
-                T result =  _wheels.First(w => w.Id.Equals(0)).WheelArrayPositions[codeNumberPosition];
+                T result = _wheels.First(w => w.Id.Equals(0)).WheelArrayPositions[codeNumberPosition];
                 _mappedCache.Add(codeNumber, result);
                 return result;
             }
@@ -92,17 +92,12 @@ namespace MexicanArmyCipherBreaker.Library
 
         public string EncodeText(string[] textToDecode)
         {
-            var sw = new Stopwatch();
-            sw.Start();
-
             var sb = new StringBuilder();
 
             foreach (var code in textToDecode)
             {
-                sb.Append(Encode(code));
+                sb.Append(Decode(code));
             }
-            sw.Stop();
-            //Console.WriteLine($"EncodeText(...) took {sw.ElapsedMilliseconds} ms.");
             return sb.ToString();
         }
 
@@ -116,6 +111,9 @@ namespace MexicanArmyCipherBreaker.Library
             return configStringBuilder.ToString();
         }
 
+        /// <summary>
+        /// Clear cache after changing any wheel configuration
+        /// </summary>
         public void ClearCache()
         {
             _mappedCache = new Dictionary<string, T>();
