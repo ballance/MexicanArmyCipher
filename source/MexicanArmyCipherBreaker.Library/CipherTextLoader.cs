@@ -23,5 +23,15 @@ namespace MexicanArmyCipherBreaker.Library
             }
             return returnFullText.ToString();
         }
+
+        public void WritePlainTextToFile(string plainText, string wheelConfig)
+        {
+            using (var fileWriter = new StreamWriter($@"c:\home\temp\decoded\config_{wheelConfig}.txt"))
+            {
+                fileWriter.Write(plainText);
+                fileWriter.Flush();
+                fileWriter.Close();
+            }
+        }
     }
 }

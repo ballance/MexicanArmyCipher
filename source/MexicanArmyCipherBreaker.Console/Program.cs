@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -12,20 +13,51 @@ namespace MexicanArmyCipherBreaker.Console
     {
         static void Main(string[] args)
         {
+            Driver();
+        }
+
+        public static async void Driver()
+        {
+            var sw = new Stopwatch();
+            sw.Start();
             var letterDistributionEnglish = new LetterDistributionCollection();
             letterDistributionEnglish.Load();
 
-            var codeWheelSystem = LoadMexicanArmyCodeWheel(new CryptoWheelSystem<string>(26));
 
-            codeWheelSystem.SetWheelPositions("c", "03", "33", "67", "84");
-            
-            FileHelper fh = new FileHelper();
-            var cipherTextFromFile = fh.GetCipherTextFromFile(@"c:\home\temp\cipherText.txt");
+            var fileHelper = new FileHelper();
+            var cipherTextFromFile = fileHelper.GetCipherTextFromFile(@"c:\home\temp\cipherText.txt");
             var textToDecode = cipherTextFromFile.Split(' ');
 
-            var decodedText = codeWheelSystem.DecodeText(textToDecode);
-           // var decodedPlaintextLetter = codeWheelSystem.Decode(codeToLookUp);
-            System.Console.WriteLine($"{decodedText}");
+            var codeWheelSystem = LoadMexicanArmyCodeWheel(new CryptoWheelSystem<string>(26));
+
+            System.Console.Write("Decyphering.");
+            for(int wheel1Index = 0; wheel1Index < 26; wheel1Index++)
+            {
+                for (int wheel2Index = 0; wheel2Index < 26; wheel2Index++)
+                {
+                    for (int wheel3Index = 0; wheel3Index < 26; wheel3Index++)
+                    {
+                        for (int wheel4Index = 0; wheel4Index < 26; wheel4Index++)
+                        {
+                            //codeWheelSystem.SetWheelPositions("c", "10", "50", "67", "84");
+                            var decodedText = codeWheelSystem.EncodeText(textToDecode);
+                            if (decodedText.HasFrequentEnglishWord())
+                            {
+                                fileHelper.WritePlainTextToFile(decodedText, codeWheelSystem.WriteConfigToString());
+                            }
+                            codeWheelSystem.ClearCache();
+                            codeWheelSystem.ShiftWheelTopPositionRight(4);
+                            System.Console.Write(".");
+                        }
+                        codeWheelSystem.ShiftWheelTopPositionRight(3);
+                    }
+                    codeWheelSystem.ShiftWheelTopPositionRight(2);
+                }
+                codeWheelSystem.ShiftWheelTopPositionRight(1);
+            }
+            
+            sw.Stop();
+            System.Console.WriteLine($"Completed in {sw.Elapsed.TotalSeconds} seconds.");
             System.Console.ReadKey();
         }
 
