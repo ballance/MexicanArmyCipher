@@ -26,7 +26,7 @@ namespace MexicanArmyCipherBreaker.Library
 
         public void WritePlainTextToFile(string plainText, string wheelConfig)
         {
-            using (var fileWriter = new StreamWriter($@"c:\home\temp\decoded\config_{wheelConfig}.txt"))
+            using (var fileWriter = new StreamWriter($@"c:\home\temp\decoded\candidate_{wheelConfig}.txt"))
             {
                 fileWriter.Write(plainText);
                 fileWriter.Flush();

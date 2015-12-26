@@ -45,11 +45,14 @@ namespace MexicanArmyCipherBreaker.Console
                             var decodedText = codeWheelSystem.EncodeText(textToDecode);
                             if (decodedText.HasFrequentEnglishWord())
                             {
-                                System.Console.WriteLine();
+                                System.Console.Clear();
+                                System.Console.BackgroundColor = ConsoleColor.DarkGreen;
+                                System.Console.ForegroundColor = ConsoleColor.Red;
                                 System.Console.WriteLine("******************************************************************************");
                                 System.Console.WriteLine($"* BOOM!  Decyphered a candidate at {codeWheelSystem.WriteConfigToString()}");
                                 System.Console.WriteLine("******************************************************************************");
                                 System.Console.WriteLine();
+                                System.Console.ResetColor();
                                 fileHelper.WritePlainTextToFile(decodedText, codeWheelSystem.WriteConfigToString());
                             }
                             codeWheelSystem.ClearCache();
@@ -57,10 +60,14 @@ namespace MexicanArmyCipherBreaker.Console
                             System.Console.Write(".");
                         }
                         codeWheelSystem.ShiftWheelTopPositionRight(3);
+                        System.Console.Write("#");
                     }
                     codeWheelSystem.ShiftWheelTopPositionRight(2);
+                    System.Console.Write("//");
+
                 }
                 codeWheelSystem.ShiftWheelTopPositionRight(1);
+                System.Console.Write("&&&");
             }
 
             sw.Stop();
@@ -80,8 +87,8 @@ namespace MexicanArmyCipherBreaker.Console
 
         private static CryptoWheelSystem<string> LoadMexicanArmyCodeWheel(CryptoWheelSystem<string> cryptoWheelSystem)
         {
-            var outerLetterWheel = new CryptoWheel<string>(26) { Name = "Outside Letter Wheel"};
-            var outerLetterWheelmarkValues = new string[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+            var outerLetterWheel = new CryptoWheel<string>(26) { Name = "Outside Letter Wheel" };
+            var outerLetterWheelmarkValues = new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
             int j = 0;
             foreach (var mark in outerLetterWheelmarkValues)
             {
