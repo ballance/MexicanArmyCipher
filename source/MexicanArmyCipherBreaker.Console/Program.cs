@@ -21,24 +21,26 @@ namespace MexicanArmyCipherBreaker.Console
             var cipherTextFromFile = fileHelper.GetCipherTextFromFile(@"c:\home\temp\cipherText.txt");
             var textToDecode = cipherTextFromFile.Split(' ');
 
-            var codeWheelSystem = LoadMexicanArmyCodeWheel(new CryptoWheelSystem<string>(26));
+            var initialWheelSystem = LoadInitialMexicanArmyCodeWheel(new CryptoWheelSystem<string>(26));
 
-            System.Console.Write("Decyphering.");
+            System.Console.Write("Setting up the wheels.");
 
             //SolveKnownConfiguration(codeWheelSystem, textToDecode);
 
             var solver = new Solver();
-            var solutions = solver.BruteForce(codeWheelSystem, textToDecode, fileHelper);
-            foreach (var solution in solutions)
-            {
-                fileHelper.WritePlainTextToFile(solution.DecodedText, solution.WheelConfiguration);
-            }
+            //var solutions = 
+                solver.BruteForce(initialWheelSystem, textToDecode, fileHelper);
+            //foreach (var solution in solutions)
+            //{
+            //    fileHelper.WritePlainTextToFile(solution.DecodedText, solution.WheelConfiguration);
+            //}
+
             sw.Stop();
             System.Console.WriteLine($"Completed in {sw.Elapsed.TotalSeconds} seconds.");
             System.Console.ReadKey();
         }
         
-        private static CryptoWheelSystem<string> LoadMexicanArmyCodeWheel(CryptoWheelSystem<string> cryptoWheelSystem)
+        private static CryptoWheelSystem<string> LoadInitialMexicanArmyCodeWheel(CryptoWheelSystem<string> cryptoWheelSystem)
         {
             // Set up outside letter wheel.  Wheels are added from outer to inner
             var outerLetterWheel = new CryptoWheel<string>(26) { Name = "Outside Letter Wheel" };

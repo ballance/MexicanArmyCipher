@@ -2,23 +2,28 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Management.Instrumentation;
 using System.Text;
 
 namespace MexicanArmyCipherBreaker.Library
 {
     public class CryptoWheelSystem<T>
     {
-        private Dictionary<string, T> _mappedCache = new Dictionary<string, T>();
+        private Dictionary<string, T> _mappedCache;
         public CryptoWheelSystem(int numPositions)
         {
             _wheels = new List<CryptoWheel<T>>();
+            _mappedCache = new Dictionary<string, T>();
             _numPositions = numPositions;
         }
 
         private readonly List<CryptoWheel<T>> _wheels;
-        private readonly int _numPositions;
+        private int _numPositions;
 
         public int Count => _wheels.Count;
+
+
+        public int NumPositions => _numPositions;
 
         public int AddWheel(CryptoWheel<T> wheel)
         {
@@ -37,7 +42,7 @@ namespace MexicanArmyCipherBreaker.Library
 
         public void SetWheelTopPositionById(int wheelId, T setPosition)
         {
-            var foundWheel = _wheels.Where(w => w.Id.Equals(wheelId));
+            var foundWheel = _wheels.Where(w => w.Id.Equals(wheelId)).ToList();
 
             if (foundWheel == null || !foundWheel.Any())
                 throw new ApplicationException("Wheel not found");
@@ -118,5 +123,22 @@ namespace MexicanArmyCipherBreaker.Library
         {
             _mappedCache = new Dictionary<string, T>();
         }
+
+        public void Clone(CryptoWheelSystem<string> initialCodeWheelSystem)
+        {
+            foreach (var wheel in initialCodeWheelSystem.Wheels)
+            {
+                var newWheel = new CryptoWheel<string>(initialCodeWheelSystem.NumPositions)
+                {
+                    WheelArrayPositions = (string[]) wheel.WheelArrayPositions.Clone()
+                };
+                var changedType = (CryptoWheel<T>) Convert.ChangeType(newWheel, typeof(CryptoWheel<T>));
+                _wheels.Add(changedType);
+            }
+            _mappedCache = new Dictionary<string, T>();
+            _numPositions = initialCodeWheelSystem.NumPositions;
+        }
+
+        public List<CryptoWheel<T>> Wheels { get { return _wheels; } }
     }
 }
